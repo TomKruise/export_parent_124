@@ -1,0 +1,4 @@
+com/tom/service/cargo/impl/ContractServiceImpl.class
+com/tom/service/cargo/impl/FactoryServiceImpl.class
+com/tom/service/cargo/impl/ContractProductServiceImpl.class
+com/tom/app/CargoProvider.class

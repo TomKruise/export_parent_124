@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xmlns:dubbo="http://code.alibabatech.com/schema/dubbo"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:mvc="http://www.springframework.org/schema/mvc"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc.xsd
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+        http://code.alibabatech.com/schema/dubbo http://code.alibabatech.com/schema/dubbo/dubbo.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <!-- 如果在web层用了，用户授权注解方式，此标签需要在 spring-mvc.xml中配置 -->
+    <aop:aspectj-autoproxy/>
+
+    <!--开启注解组件扫描-->
+    <context:component-scan base-package="com.tom.web"/>
+
+    <!--mvc注解支持-->
+    <mvc:annotation-driven conversion-service="conversionService2"/>
+
+    <!-- 加载自定义类型转换器-->
+    <bean class="org.springframework.context.support.ConversionServiceFactoryBean" id="conversionService2">
+        <property name="converters">
+            <set>
+                <bean class="com.tom.web.converter.String2DateConverter"></bean>
+            </set>
+        </property>
+    </bean>
+
+    <!--视图解析器-->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="prefix" value="/WEB-INF/pages/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+    <dubbo:application name="export_portal_web"></dubbo:application>
+
+    <dubbo:registry address="zookeeper://127.0.0.1:2181"></dubbo:registry>
+
+    <!-- 扫描@Reference-->
+    <dubbo:annotation package="com.tom.web"></dubbo:annotation>
+
+    <!-- timeout:单位毫秒 retries:重新发送的次数为0 check:检查是否有服务提供者-->
+    <dubbo:consumer timeout="3000" retries="0" check="false"></dubbo:consumer>
+
+    <bean class="org.springframework.web.multipart.commons.CommonsMultipartResolver" id="multipartResolver">
+        <property name="maxUploadSize">
+            <value>5242880</value>
+        </property>
+    </bean>
+</beans>

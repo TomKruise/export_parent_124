@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="CompilerConfiguration">
+    <annotationProcessing>
+      <profile default="true" name="Default" enabled="true" />
+      <profile name="Maven default annotation processors profile" enabled="true">
+        <sourceOutputDir name="target/generated-sources/annotations" />
+        <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
+        <outputRelativeToContentRoot value="true" />
+        <module name="export_commons" />
+        <module name="export_cargo_interface" />
+        <module name="export_domain" />
+        <module name="export_stat_interface" />
+        <module name="export_portal_web" />
+        <module name="export_stat_service" />
+        <module name="jk_export" />
+        <module name="export_mail" />
+        <module name="export_dao" />
+        <module name="export_cargo_service" />
+        <module name="export_company_service" />
+        <module name="export_company_interface" />
+        <module name="export_system_service" />
+        <module name="export_manager_web" />
+      </profile>
+    </annotationProcessing>
+    <bytecodeTargetLevel target="8">
+      <module name="spring_consumer" target="1.5" />
+      <module name="spring_rabbit_mq" target="1.8" />
+      <module name="test" target="1.8" />
+    </bytecodeTargetLevel>
+  </component>
+</project>

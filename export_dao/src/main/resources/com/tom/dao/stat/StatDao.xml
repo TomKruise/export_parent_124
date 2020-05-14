@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.tom.dao.stat.StatDao">
+
+
+    <!--厂家销售统计-->
+    <select id="findFactoryCharts" resultType="java.util.Map">
+        SELECT factory_name name , sum(amount) value from co_contract_product
+            WHERE company_id = #{companyId} GROUP BY factory_name
+    </select>
+
+    <!--产品的销量排行榜-->
+    <select id="findSellCharts" resultType="java.util.Map">
+        select product_no name , sum(cnumber) value from co_contract_product
+            where company_id = #{companyId}
+            group by product_no
+            order by sum(cnumber) desc limit 10
+    </select>
+
+    <!--系统访问压力图-->
+    <select id="findOnlineCharts" resultType="java.util.Map">
+        select info.a1 name, ifnull(slog.num,0) value from st_online_info info
+            left outer join
+            (
+                select date_format(time,'%H') hour, count(*) num from st_sys_log where company_id = #{companyId}
+                group by date_format(time,'%H')
+            ) slog
+            on info.a1 = slog.hour order by info.a1 asc
+    </select>
+</mapper>

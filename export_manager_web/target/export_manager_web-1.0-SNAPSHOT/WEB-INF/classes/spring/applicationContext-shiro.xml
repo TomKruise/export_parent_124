@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+    <description>Shiro与Spring整合</description>
+
+    <!-- filter-name这个名字的值来自于web.xml中filter的名字 -->
+    <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
+        <!-- 引入shiro的核心 安全管理器 -->
+        <property name="securityManager" ref="securityManager"/>
+        <!--登录页面-->
+        <property name="loginUrl" value="/login.jsp"></property>
+        <!--权限不足页面  -->
+        <property name="unauthorizedUrl" value="/unauthorized.jsp"></property>
+        <!--过滤器链 -->
+        <property name="filterChainDefinitions">
+            <!-- 一个过滤（拦截）规则占用一行 -->
+            <value>
+                /login.jsp = anon
+                /css/** = anon
+                /img/** = anon
+                /plugins/** = anon
+                /make/** = anon
+                /login.do = anon
+                /company/list.do = perms["企业管理"]
+                /system/dept/list.do = perms["部门管理"]
+                <!--                /system/user/list.do = perms["用户管理"]-->
+                /system/role/list.do = myPerms["角色管理","新增角色"]<!--使用自定义的过滤器-->
+
+                /** = authc
+            </value>
+        </property>
+
+        <!-- 加载自定义过滤器-->
+        <property name="filters">
+            <map>
+                <entry key="myPerms" value-ref="myPermissionFilter"></entry>
+            </map>
+        </property>
+    </bean>
+
+    <!-- 引用自定义的realm-->
+    <bean id="saasRealm" class="com.tom.shiro.SaasRealm"/>
+
+    <!-- 自定义的过滤器-->
+    <bean class="com.tom.shiro.MyPermissionFilter" id="myPermissionFilter">
+
+    </bean>
+
+    <!-- 基于内存的缓存管理器-->
+    <bean class="org.apache.shiro.cache.MemoryConstrainedCacheManager" id="cacheManager"></bean>
+
+    <!-- 基于redis的缓存管理器-->
+<!--    <bean id="redisManager" class="org.crazycake.shiro.RedisManager">-->
+<!--        <property name="host" value="127.0.0.1:6379"></property>-->
+<!--    </bean>-->
+
+<!--    <bean id="cacheManager" class="org.crazycake.shiro.RedisCacheManager">-->
+<!--        <property name="redisManager" ref="redisManager"></property>-->
+<!--    </bean>-->
+
+    <!-- 安全管理器 -->
+    <bean id="securityManager" class="org.apache.shiro.web.mgt.DefaultWebSecurityManager">
+        <property name="realm" ref="saasRealm"/>
+        <property name="cacheManager" ref="cacheManager"></property>
+    </bean>
+
+
+    <!-- 安全管理器注解支持 -->
+    <bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
+        <property name="securityManager" ref="securityManager"/>
+    </bean>
+
+    <!-- 保证实现了Shiro内部lifecycle函数的bean执行 -->
+    <bean id="lifecycleBeanPostProcessor" class="org.apache.shiro.spring.LifecycleBeanPostProcessor"/>
+
+    <!-- 生成代理，通过代理进行控制 -->
+    <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"
+          depends-on="lifecycleBeanPostProcessor">
+        <property name="proxyTargetClass" value="true"/>
+    </bean>
+
+    <!-- 如果在web层用了，用户授权注解方式，此标签需要在 spring-mvc.xml中配置 -->
+    <!--    <aop:aspectj-autoproxy/>-->
+
+</beans>

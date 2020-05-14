@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tom.dao.company.CompanyDao">
+    <resultMap id="BaseResultMap" type="com.tom.domain.company.Company">
+        <id column="id" property="id"/>
+        <result column="expiration_date" property="expirationDate"/>
+        <result column="license_id" property="licenseId"/>
+        <result column="company_size" property="companySize"/>
+    </resultMap>
+
+    <select id="findAll" resultMap="BaseResultMap">
+        select * from ss_company
+    </select>
+
+    <select id="findById" parameterType="string" resultMap="BaseResultMap">
+        select * from ss_company where id = #{id}
+    </select>
+    
+    <insert id="save" parameterType="Company">
+        insert into ss_company
+        (
+            id,
+            name,
+            expiration_date,
+            address,
+            license_id,
+            representative,
+            phone,
+            company_size,
+            industry,
+            remarks,
+            state,
+            balance,
+            city
+        )
+        values
+        (
+            #{id},
+            #{name},
+            #{expirationDate},
+            #{address},
+            #{licenseId},
+            #{representative},
+            #{phone},
+            #{companySize},
+            #{industry},
+            #{remarks},
+            #{state},
+            #{balance},
+            #{city}
+        )
+    </insert>
+
+    <update id="update" parameterType="Company">
+        update ss_company
+        <set>
+            <if test="name!=null and name !=''">
+                name=#{name},
+            </if>
+            <if test="expirationDate!=null">
+                expiration_date=#{expirationDate},
+            </if>
+            <if test="address!=null and address !=''">
+                address=#{address},
+            </if>
+            license_id=#{licenseId},
+            representative=#{representative},
+            phone=#{phone},
+            company_size=#{companySize},
+            industry=#{industry},
+            remarks=#{remarks},
+            state=#{state},
+            balance=#{balance},
+            city=#{city}
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="delete" parameterType="string">
+        delete from ss_company where id = #{id}
+    </delete>
+
+    <select id="findCount" resultType="long">
+        select count(*) from ss_company
+    </select>
+    
+    <select id="findList" resultMap="BaseResultMap">
+        select * from ss_company limit #{index}, #{pageSize}
+    </select>
+</mapper>

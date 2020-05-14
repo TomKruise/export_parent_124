@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:p="http://www.springframework.org/schema/p"
+       xsi:schemaLocation="
+       	http://www.springframework.org/schema/beans
+		http://www.springframework.org/schema/beans/spring-beans.xsd
+       	http://www.springframework.org/schema/context
+		http://www.springframework.org/schema/context/spring-context.xsd">
+
+    <description>spring整合quartz</description>
+
+    <!-- 1.配置Job：自定义的一个任务类-->
+    <bean id="exportJob" class="com.tom.task.ExportJob"></bean>
+    <!-- 2.配置JobDetail：确定任务类的run方法来执行工作 -->
+    <bean id="myJobDetail" class="org.springframework.scheduling.quartz.MethodInvokingJobDetailFactoryBean">
+        <!-- 1.确定任务类-->
+        <property name="targetObject" ref="exportJob"/>
+        <!-- 2.确定任务类的方法-->
+        <property name="targetMethod" value="run"/>
+    </bean>
+    <!--3.配置Trigger：配置时间规则来执行JobDetail-->
+    <bean id="myTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <!-- 1.配置时间规则-->
+        <property name="cronExpression" value="* * 0/6 * * ? *"></property>
+        <!-- 2.配置jobDetail-->
+        <property name="jobDetail" ref="myJobDetail"></property>
+     </bean>
+
+
+    <!--4.配置Scheduler：统一管理配置trigger-->
+    <bean id="scheduler" class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+        <property name="triggers">
+            <array>
+                <ref bean="myTrigger"></ref>
+            </array>
+        </property>
+    </bean>
+
+</beans>

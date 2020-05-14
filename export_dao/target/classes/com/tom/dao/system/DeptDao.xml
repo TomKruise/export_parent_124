@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.tom.dao.system.DeptDao">
+    <resultMap id="BaseResultMap" type="Dept">
+        <!-- 主键-->
+        <id property="id" column="dept_id"/>
+        <!-- 普通字段-->
+        <result column="dept_name" property="deptName"/>
+        <result column="company_id" property="companyId"/>
+        <result column="company_name" property="companyName"/>
+        <!--
+        嵌套查询标签
+                property="parent" 接收父部门属性的名称
+                javaType="com.tom.domain.system.Dept" 父部门属性的java类型
+                column="parent_id" 查询条件的 parent_id 字段
+                select="com.tom.dao.system.DeptDao.findById" 需要执行查询的dao方法
+        -->
+        <association property="parent" javaType="Dept" column="parent_id" select="com.tom.dao.system.DeptDao.findById">
+
+        </association>
+    </resultMap>
+
+    <select id="findAll" resultMap="BaseResultMap">
+        select * from pe_dept where company_id = #{companyId}
+    </select>
+
+    <select id="findById" resultMap="BaseResultMap">
+        select * from pe_dept where dept_id = #{id}
+    </select>
+
+    <insert id="save">
+        insert into pe_dept (
+            dept_id,
+            dept_name,
+            parent_id,
+            state,
+            company_id,
+            company_name
+        ) values (
+            #{id},
+            #{deptName},
+            #{parent.id},
+            #{state},
+            #{companyId},
+            #{companyName}
+        )
+    </insert>
+
+    <update id="update">
+        update pe_dept
+        <set>
+            <if test="deptName!=null and deptName !=''">
+                dept_name=#{deptName},
+            </if>
+            <if test="parent!=null">
+                parent_id=#{parent.id},
+            </if>
+            state=#{state},
+            company_id=#{companyId},
+            company_name=#{companyName}
+        </set>
+        where dept_id = #{id}
+    </update>
+
+    <delete id="delete">
+        delete from pe_dept where dept_id = #{id}
+    </delete>
+</mapper>
